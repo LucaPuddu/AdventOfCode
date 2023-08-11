@@ -8,6 +8,19 @@ where P: AsRef<Path>, {
     Ok(io::BufReader::new(file).lines())
 }
 
+fn smallest<T: std::cmp::PartialOrd>(a: T, b: T, c: T) -> T {
+    match a > b {
+        true => match b > c {
+            true => c,
+            false => b
+        },
+        false => match a > c {
+            true => c,
+            false => a
+        }
+    }
+}
+
 struct Present {
     l: f32,
     w: f32,
@@ -23,35 +36,50 @@ impl Present {
         )
     }
 
+    fn perimeters (&self) -> (f32, f32, f32) {
+        (
+            Present::side_perimeter(self.l, self.w),
+            Present::side_perimeter(self.w, self.h),
+            Present::side_perimeter(self.h, self.l)
+        )
+    }
+
     fn total_area (&self) -> f32 {
         let areas = Present::areas(&self);
 
-        areas.0 +
-        areas.1 +
-        areas.2
+        2.0 * (areas.0 + areas.1 + areas.2)
     }
 
     fn side_area (a: f32, b: f32) -> f32 {
-        2.0 * a * b
+        a * b
+    }
+
+    fn side_perimeter (a: f32, b: f32) -> f32 {
+        2.0 * (a + b)
     }
 
     fn smallest_area(&self) -> f32 {
         let areas = Present::areas(&self);
 
-        (match areas.0 > areas.1 {
-            true => match areas.1 > areas.2 {
-                true => areas.2,
-                false => areas.1
-            },
-            false => match areas.0 > areas.2 {
-                true => areas.2,
-                false => areas.0
-            }
-        }) / 2.0
+        smallest(areas.0, areas.1, areas.2)
+    }
+
+    fn shortest_perimeter(&self) -> f32 {
+        let perimeters = Present::perimeters(&self);
+
+        smallest(perimeters.0, perimeters.1, perimeters.2)
+    }
+
+    fn volume(&self) -> f32 {
+        self.l * self.w * self.h
     }
 
     fn total_paper(&self) -> f32 {
         Present::total_area(&self) + Present::smallest_area(&self)
+    }
+
+    fn total_ribbon(&self) -> f32 {
+        Present::shortest_perimeter(&self) + Present::volume(&self)
     }
 }
 
@@ -61,21 +89,25 @@ fn main() {
     // File hosts.txt must exist in the current path
     if let Ok(lines) = read_lines(file) {
         let mut total_paper = 0.0;
+        let mut total_ribbon = 0.0;
 
       // Consumes the iterator, returns an (Optional) String
         for line in lines {
             if let Ok(size) = line {
                 let sides: Vec<f32> = size.split('x').map(|num| num.trim().parse().unwrap()).collect();
-
-                total_paper += (Present {
+                let present = Present {
                     l: sides[0],
                     w: sides[1],
                     h: sides[2]
-                }).total_paper();
+                };
+
+                total_paper += present.total_paper();
+                total_ribbon += present.total_ribbon();
             }
         }
 
         println!("The total paper needed is {}", total_paper);
+        println!("The total ribbon needed is {}", total_ribbon);
     } else {
         println!("File {} not found", file);
     }
@@ -98,5 +130,15 @@ mod tests {
     #[test]
     fn it_returns_total_paper() {
         assert_eq!(58.0, (Present {l: 2.0, w: 3.0, h: 4.0}).total_paper())
+    }
+
+    #[test]
+    fn it_returns_shortest_perimeter() {
+        assert_eq!(10.0, (Present {l: 2.0, w: 3.0, h: 4.0}).shortest_perimeter())
+    }
+
+    #[test]
+    fn it_returns_total_ribbon() {
+        assert_eq!(34.0, (Present {l: 2.0, w: 3.0, h: 4.0}).total_ribbon())
     }
 }
