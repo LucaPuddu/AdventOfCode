@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::io;
 
 fn get_input_file() -> String {
-    include_str!("day01.txt").trim().to_owned()
+    include_str!("data.txt").trim().to_owned()
 }
 
 fn get_input() -> String {
