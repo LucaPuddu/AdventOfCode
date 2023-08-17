@@ -11,3 +11,10 @@ For example:
 
 
 Your puzzle input is `ckczppom`.
+
+Your puzzle answer was `117946`.
+
+The first half of this puzzle is complete! It provides one gold star: *
+
+# --- Part Two ---
+Now find one that starts with *six zeroes*.
