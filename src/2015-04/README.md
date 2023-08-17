@@ -17,4 +17,12 @@ Your puzzle answer was `117946`.
 The first half of this puzzle is complete! It provides one gold star: *
 
 # --- Part Two ---
-Now find one that starts with *six zeroes*.
+Now find one that starts with six zeroes.
+
+Your puzzle answer was `3938038`.
+
+Both parts of this puzzle are complete! They provide two gold stars: **
+
+At this point, you should return to your Advent calendar and try another puzzle.
+
+Your puzzle input was `ckczppom`.
